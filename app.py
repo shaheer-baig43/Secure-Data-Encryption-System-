@@ -112,23 +112,29 @@ elif choice == "Login":
                     st.error("🔴 Too many failed attempts. Locked for 60 seconds")
                     st.stop()
 
-                
 elif choice == "Store Data":
     if not st.session_state.authenticated_user:
         st.warning("🔒 Please login first.")
     else:
         st.subheader("🔑 Store Encrypted Data")
-        data = st.text_area("Enter data to encrypt")
-        passkey = st.text_input("Encryption key (passphrase)", type="password")
+
+        data_title = st.text_input("Enter a name/label for your data")
+        data_content = st.text_area("Enter data to encrypt")
+        passkey = st.text_input("Create a passkey for this data", type="password")
 
         if st.button("Encrypt And Save"):
-            if data and passkey:
-                encrypted = encrypt_text(data, passkey)
-                stored_data[st.session_state.authenticated_user]["data"].append(encrypted)
+            if data_title and data_content and passkey:
+                encrypted = encrypt_text(data_content, passkey)
+                entry = {
+                    "title": data_title,
+                    "encrypted_data": encrypted
+                }
+                stored_data[st.session_state.authenticated_user]["data"].append(entry)
                 save_data(stored_data)
-                st.success("✅ Data encrypted and save successfully!")
+                st.success(f"✅ '{data_title}' saved and encrypted successfully!")
             else:
-                st.error("All fields are required to fill.")
+                st.error("⚠️ Please fill all fields.")
+
 
 elif choice == "Retrieve Data":
     if not st.session_state.authenticated_user:
